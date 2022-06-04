@@ -4,7 +4,6 @@ import pygame
 class Surface:
 
     def __init__(self, screen, x, y):
-        self.state = (x, y)
         self.x = x
         self.y = y
         self.weight = 0
@@ -29,13 +28,21 @@ class Rock(Surface):
 
     def __init__(self, screen, x, y):
         super().__init__(screen, x, y)
-        self.weight = 50
+        self.weight = 9
         self.image = pygame.image.load('images/rock.png')
+
+
+class Sand(Surface):
+
+    def __init__(self, screen, x, y):
+        super().__init__(screen, x, y)
+        self.weight = 3
+        self.image = pygame.image.load('images/sand.png')
 
 
 class Water(Surface):
 
     def __init__(self, screen, x, y):
         super().__init__(screen, x, y)
-        self.weight = 3
+        self.weight = -1
         self.image = pygame.image.load('images/water.png')

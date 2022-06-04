@@ -17,7 +17,7 @@ class a_star:
     # checking borders and impassable surface
     def limitation_check(self, x, y):
         for surface in self.surface_list:
-            if (surface.y / 60 == x) and (surface.x / 60 == y) and (surface.weight != 3):
+            if (surface.y / 60 == x) and (surface.x / 60 == y) and (surface.weight != -1):
                 return True
         return False
 
@@ -35,7 +35,7 @@ class a_star:
     # cost relative to surface weight
     def g(self, cond):
         if cond.action == 'L' or cond.action == 'R':
-            cond.weight = cond.parent.weight
+            cond.weight = cond.parent.weight + 1
         else:
             cond.weight = cond.parent.weight + self.current_surface(cond.state[0], cond.state[1]).weight
         return cond.weight

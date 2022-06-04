@@ -6,7 +6,6 @@ class Truck:
     def __init__(self, screen):
         self.x = 0
         self.y = 0
-        self.state = (self.x, self.y)
         self.direction = 'R'
         self.screen = screen
         self.image = pygame.image.load('images/truck.png')
