@@ -6,7 +6,7 @@ def get_path(cond):
     return list(reversed(path))
 
 
-class bfs:
+class a_star:
     def __init__(self, surface_list, endpoint):
         self.surface_list = surface_list
         self.endpoint = endpoint
@@ -14,11 +14,31 @@ class bfs:
     def goal_achieved(self, state):
         return state == self.endpoint
 
+    # checking borders and impassable surface
     def limitation_check(self, x, y):
         for surface in self.surface_list:
-            if (surface.weight == 1) and (surface.y/60 == x) and (surface.x/60 == y):
+            if (surface.y / 60 == x) and (surface.x / 60 == y) and (surface.weight != 3):
                 return True
         return False
+
+    # finding surface depending on coordinates
+    def current_surface(self, x, y):
+        for surface in self.surface_list:
+            if (x == surface.y / 60) and (y == surface.x / 60):
+                return surface
+        return None
+
+    # manhattan distance
+    def h(self, current):
+        return abs(current[0] - self.endpoint[0]) + abs(current[1] - self.endpoint[1])
+
+    # cost relative to surface weight
+    def g(self, cond):
+        if cond.action == 'L' or cond.action == 'R':
+            cond.weight = cond.parent.weight
+        else:
+            cond.weight = cond.parent.weight + self.current_surface(cond.state[0], cond.state[1]).weight
+        return cond.weight
 
     def add_all_possibilities(self, current):
         states = []
@@ -84,17 +104,23 @@ class bfs:
         return states
 
     def tree_search(self, queue, start, direction):
-        queue.append(condition(start, direction))
+        explored = []
+        queue.put(condition(start, direction), 0)
         while queue:
-            elem = queue.popleft()
+            elem = queue.get()
 
             if self.goal_achieved(elem.state):
                 return get_path(elem)
 
+            explored.append(elem)
+
             for state in self.add_all_possibilities(elem):
-                if state not in queue:
-                    state.parent = elem
-                    queue.append(state)
+                state.parent = elem
+                f = self.h(state.state) + self.g(state)
+                if state not in queue.queue and state not in explored:
+                    queue.put(state, state.weight)
+                elif state in queue.queue and state.weight > f:
+                    queue.replace(state, f)
 
 
 class condition:
@@ -103,10 +129,22 @@ class condition:
         self.parent = None
         self.action = None
         self.direction = direction
-        self.cost = 0
+        self.weight = 0
 
     def __eq__(self, other):
         if isinstance(other, condition):
             return (self.state == other.state and
                     self.action == other.action and
                     self.direction == other.direction)
+
+    def __lt__(self, other):
+        return self.weight < other.weight
+
+    def __gt__(self, other):
+        return self.weight > other.weight
+
+    def __le__(self, other):
+        return self.weight <= other.weight
+
+    def __ge__(self, other):
+        return self.weight >= other.weight

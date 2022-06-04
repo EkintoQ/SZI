@@ -1,6 +1,8 @@
-from collections import deque
+# from collections import deque
+from queue import PriorityQueue
 
-from path_algorithms.bfs import bfs
+from path_algorithms.a_star import a_star
+# from path_algorithms.bfs import bfs
 from truck import Truck
 from surface import *
 
@@ -8,9 +10,9 @@ RESOLUTION = 900
 SIZE = 60
 
 # matrix for display
-matrix = [[1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+matrix = [[1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
           [1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-          [1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
           [1, 1, 3, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1],
           [1, 1, 3, 1, 2, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1],
           [1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1],
@@ -40,6 +42,8 @@ for i in range(15):
 
 run = 1
 path = []
+start = truck.state
+direction = truck.direction
 while True:
     pygame.time.delay(500)
 
@@ -51,7 +55,8 @@ while True:
         start = truck.state
         direction = truck.direction
         endpoint = (0, 5)
-        path = bfs(surface_list, endpoint).tree_search(deque(), start, direction)
+        # path = bfs(surface_list, endpoint).tree_search(deque(), start, direction)
+        path = a_star(surface_list, endpoint).tree_search(PriorityQueue(), start, direction)
         print(path)
         run = 0
 

@@ -29,7 +29,7 @@ class Rock(Surface):
 
     def __init__(self, screen, x, y):
         super().__init__(screen, x, y)
-        self.weight = 2
+        self.weight = 50
         self.image = pygame.image.load('images/rock.png')
 
 
