@@ -32,11 +32,11 @@ surface_list = []
 for i in range(15):
     for j in range(15):
         if matrix[i][j] == 1:
-            surface_list.append(Grass(screen, j * 60, i * 60, 1))
+            surface_list.append(Grass(screen, j * 60, i * 60))
         if matrix[i][j] == 2:
-            surface_list.append(Rock(screen, j * 60, i * 60, 2))
+            surface_list.append(Rock(screen, j * 60, i * 60))
         if matrix[i][j] == 3:
-            surface_list.append(Water(screen, j * 60, i * 60, 3))
+            surface_list.append(Water(screen, j * 60, i * 60))
 
 run = 1
 path = []

@@ -3,11 +3,11 @@ import pygame
 
 class Surface:
 
-    def __init__(self, screen, x, y, weight):
+    def __init__(self, screen, x, y):
         self.state = (x, y)
         self.x = x
         self.y = y
-        self.weight = weight
+        self.weight = 0
         self.screen = screen
         self.image = pygame.image.load('images/grass.png')
         self.surface_rect = self.image.get_rect()
@@ -19,20 +19,23 @@ class Surface:
 
 class Grass(Surface):
 
-    def __init__(self, screen, x, y, weight):
-        super().__init__(screen, x, y, weight)
+    def __init__(self, screen, x, y):
+        super().__init__(screen, x, y)
+        self.weight = 1
         self.image = pygame.image.load('images/grass.png')
 
 
 class Rock(Surface):
 
-    def __init__(self, screen, x, y, weight):
-        super().__init__(screen, x, y, weight)
+    def __init__(self, screen, x, y):
+        super().__init__(screen, x, y)
+        self.weight = 2
         self.image = pygame.image.load('images/rock.png')
 
 
 class Water(Surface):
 
-    def __init__(self, screen, x, y, weight):
-        super().__init__(screen, x, y, weight)
+    def __init__(self, screen, x, y):
+        super().__init__(screen, x, y)
+        self.weight = 3
         self.image = pygame.image.load('images/water.png')
