@@ -27,6 +27,9 @@ class Rubbish:
     def data_for_decision_tree(self):
         return [self.weight, self.density, self.fragility, self.material, self.size, self.degradability, self.renewability]
 
+    def rubbish_refused(self):
+        self.image = pygame.image.load('images/refused_rubbish.png')
+
 
 class PaperWaste(Rubbish):
 

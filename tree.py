@@ -6,6 +6,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 
 def evaluate_values(values):
+
     data = []
     if values[0] == 10:
         data.append(10)

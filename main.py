@@ -11,16 +11,25 @@ from surface import *
 RESOLUTION = 900
 SIZE = 60
 
+pygame.init()
+screen = pygame.display.set_mode([RESOLUTION, RESOLUTION])
+
+truck = Truck(screen)
+surface_list = []
+rubbish_list = []
+refused_rubbish_list = []
+
+# x and y are swapped on display in pygame
 # matrix for display
 matrix = [[0, 1, 1, 2, 2, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 3, 0, 0, 1, 2, 3, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 3, 0, 2, 1, 5, 3, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 3, 0, 2, 1, 5, 3, 0, 5, 0, 0, 0, 0, 0],
           [0, 0, 0, 5, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0],
-          [3, 3, 3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+          [3, 3, 3, 0, 0, 0, 2, 5, 0, 5, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -28,13 +37,6 @@ matrix = [[0, 1, 1, 2, 2, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           ]
-pygame.init()
-screen = pygame.display.set_mode([RESOLUTION, RESOLUTION])
-
-truck = Truck(screen)
-surface_list = []
-rubbish_list = []
-# x and y are swapped on display in pygame
 for i in range(15):
     for j in range(15):
         if matrix[i][j] == 0:
@@ -50,23 +52,19 @@ for i in range(15):
             rubbish_list.append(Rubbish(screen, j * 60, i * 60))
 
 path = []
-run = 1
 while True:
     pygame.time.delay(500)
 
+    # drawing on screen
     for i in surface_list:
         i.draw_surface()
     for i in rubbish_list:
         i.draw_rubbish()
+    for i in refused_rubbish_list:
+        i.draw_rubbish()
     truck.draw_truck()
 
-    if run == 1:
-        # func(rubbish_list[0])
-        data = rubbish_list[0].data_for_decision_tree()
-        test = trash_selection(evaluate_values(data))
-        print(test)
-        run = 0
-
+    # finding a path to rubbish
     if rubbish_list and not path:
         start = (truck.y / 60, truck.x / 60)
         direction = truck.direction
@@ -75,15 +73,32 @@ while True:
         # path = bfs(surface_list, endpoint).tree_search(deque(), start, direction)
         path = a_star(surface_list, endpoint).tree_search(PriorityQueue(), start, direction)
 
+    # do an action
     if path:
         action = path.pop(0)
         if action == 'M':
             truck.move()
         else:
             truck.change_direction(action)
-    if not path:
-        if rubbish_list:
-            print(rubbish_list.pop(0).x)
+
+    # the decision that takes what to do with the garbage
+    if not path and rubbish_list:
+        data = rubbish_list[0].data_for_decision_tree()
+        print(f'----------\n'
+              f'Characteristics of the garbage we met:\n'
+              f'Weight:{data[0]}\nDensity:{data[1]}\n'
+              f'Fragility:{data[2]}\nMaterial:{data[3]}\n'
+              f'Size:{data[4]}\nDegradability:{data[4]}\n'
+              f'Renewability:{data[5]}\n'
+              f'----------')
+        decision = trash_selection(evaluate_values(data))
+        if decision == [0]:
+            print('We refused this rubbish because of bad characteristics')
+            rubbish_list[0].rubbish_refused()
+            refused_rubbish_list.append(rubbish_list[0])
+        else:
+            print('We take this rubbish because of good characteristics')
+        rubbish_list.pop(0)
 
     pygame.display.flip()
 
