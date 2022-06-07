@@ -1,12 +1,11 @@
-import random
-
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 
+from rubbish import *
+
 
 def evaluate_values(values):
-
     data = []
     if values[0] == 10:
         data.append(10)
@@ -124,7 +123,7 @@ def evaluate_values(values):
 
 
 def trash_selection(prefer):
-    df = pd.read_excel('data.xlsx', sheet_name='list1')
+    df = pd.read_excel('trash.xlsx', sheet_name='Sheet1')
     # print(df)
 
     d = {'paper': 1, 'wood': 2, 'glass': 3, 'metal': 4, 'plastic': 5}
@@ -143,10 +142,51 @@ def trash_selection(prefer):
 
     clf = DecisionTreeClassifier(criterion='entropy')
 
+    # create a decisions tree in terminal
     # model = clf.fit(X, y)
     # text_representation = tree.export_text(clf)
     # print(text_representation)
 
     clf = clf.fit(x_train, y_train)
+    answer = clf.predict([prefer])
 
-    return clf.predict([prefer])
+    # write results of training to the list
+    append_choice(answer, prefer, d, df)
+
+    return answer
+
+
+def append_df_to_excel(df, excel_path):
+    df_excel = pd.read_excel(excel_path)
+    result = pd.concat([df_excel, df], ignore_index=True)
+    result.to_excel(excel_path, index=False)
+
+
+def append_choice(answer, prefer, d, df):
+    new_row = prefer
+    new_row.append(list(d.keys())[list(d.values()).index(int(answer))])
+    if new_row[3] == 1:
+        new_row[3] = 'paper'
+    if new_row[3] == 2:
+        new_row[3] = 'wood'
+    if new_row[3] == 3:
+        new_row[3] = 'glass'
+    if new_row[3] == 4:
+        new_row[3] = 'metal'
+    if new_row[3] == 5:
+        new_row[3] = 'plastic'
+
+    if new_row[4] == 1:
+        new_row[4] = 'little'
+    if new_row[4] == 2:
+        new_row[4] = 'medium'
+    if new_row[4] == 3:
+        new_row[4] = 'huge'
+    if new_row[4] == 4:
+        new_row[4] = 'large'
+
+    data = {"weight": new_row[0], "density": new_row[1], "fragility": new_row[2], "material": new_row[3],
+            "size": new_row[4], "degradability": new_row[5], "renewability": new_row[6], "what to do": new_row[7]}
+
+    n_df = pd.DataFrame(data, index=[len(df) + 1])
+    append_df_to_excel(n_df, "trash.xlsx")
