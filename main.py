@@ -4,6 +4,7 @@ from queue import PriorityQueue
 from path_algorithms.a_star import a_star
 # from path_algorithms.bfs import bfs
 from rubbish import *
+from tree import evaluate_values, trash_selection
 from truck import Truck
 from surface import *
 
@@ -49,6 +50,7 @@ for i in range(15):
             rubbish_list.append(Rubbish(screen, j * 60, i * 60))
 
 path = []
+run = 1
 while True:
     pygame.time.delay(500)
 
@@ -57,6 +59,13 @@ while True:
     for i in rubbish_list:
         i.draw_rubbish()
     truck.draw_truck()
+
+    if run == 1:
+        # func(rubbish_list[0])
+        data = rubbish_list[0].data_for_decision_tree()
+        test = trash_selection(evaluate_values(data))
+        print(test)
+        run = 0
 
     if rubbish_list and not path:
         start = (truck.y / 60, truck.x / 60)
