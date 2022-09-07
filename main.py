@@ -7,6 +7,7 @@ from rubbish import *
 from tree import evaluate_values, trash_selection
 from truck import Truck
 from surface import *
+from genetic import genetic
 
 RESOLUTION = 900
 SIZE = 60
@@ -52,6 +53,11 @@ for i in range(15):
             rubbish_list.append(Rubbish(screen, j * 60, i * 60))
 
 path = []
+gen = [(truck.y / 60, truck.x / 60)]
+fl = 0
+length = []
+finalLength = []
+order = []
 while True:
     pygame.time.delay(500)
 
@@ -64,11 +70,40 @@ while True:
         i.draw_rubbish()
     truck.draw_truck()
 
+    # finding order to collect rubbish
+    if fl == 0:
+        for item in rubbish_list:
+            print(item.y / 60, item.x / 60, end='\n')
+            gen.append((item.y / 60, item.x / 60))
+        for item1 in range(len(gen)):
+            for item2 in range(len(gen)):
+                if item1 < item2:
+                    length.append(len(a_star(surface_list, gen[item2]).tree_search(PriorityQueue(), gen[item1], 'R')))
+                else:
+                    length.append(0)
+            finalLength.append(length)
+            length = []
+        fl = 1
+        for i in range(len(finalLength)):
+            for j in range(len(finalLength)):
+                if i > j:
+                    finalLength[i][j] = finalLength[j][i]
+        for i in range(len(finalLength)):
+            for j in range(len(finalLength)):
+                print(finalLength[i][j], end=',')
+            print('')
+        print(finalLength)
+        order = genetic(finalLength).search()
+        order = list(map(int, order))
+        order.pop(0)
+        for j in range(len(order)):
+            order[j] -= 1
+
     # finding a path to rubbish
-    if rubbish_list and not path:
+    if order and not path:
         start = (truck.y / 60, truck.x / 60)
         direction = truck.direction
-        currentRubbish = rubbish_list[0]
+        currentRubbish = rubbish_list[order[0]]
         endpoint = (currentRubbish.y / 60, currentRubbish.x / 60)
         # path = bfs(surface_list, endpoint).tree_search(deque(), start, direction)
         path = a_star(surface_list, endpoint).tree_search(PriorityQueue(), start, direction)
@@ -82,8 +117,8 @@ while True:
             truck.change_direction(action)
 
     # the decision that takes what to do with the garbage
-    if not path and rubbish_list:
-        data = rubbish_list[0].data_for_decision_tree()
+    if not path and order:
+        data = rubbish_list[order[0]].data_for_decision_tree()
         print(f'----------\n'
               f'Characteristics of the garbage we met:\n'
               f'Weight:{data[0]}\nDensity:{data[1]}\n'
@@ -94,12 +129,11 @@ while True:
         decision = trash_selection(evaluate_values(data))
         if decision == [0]:
             print('We refused this rubbish because of bad characteristics')
-            rubbish_list[0].rubbish_refused()
-            refused_rubbish_list.append(rubbish_list[0])
+            rubbish_list[order[0]].rubbish_refused()
+            refused_rubbish_list.append(rubbish_list[order[0]])
         else:
             print('We take this rubbish because of good characteristics')
-        rubbish_list.pop(0)
-
+        order.pop(0)
     pygame.display.flip()
 
     for event in pygame.event.get():
