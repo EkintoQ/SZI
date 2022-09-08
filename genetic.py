@@ -5,7 +5,7 @@ class genetic:
     def __init__(self, chrome):
         self.chrome = chrome
         self.key = 10
-        self.pop_size = 50
+        self.pop_size = 500
         self.gen_max = 20
         self.length = len(chrome) - 1
         self.div = self.length // 2

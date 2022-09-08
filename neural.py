@@ -1,7 +1,6 @@
 import math
 import os
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Dense, Activation, Flatten

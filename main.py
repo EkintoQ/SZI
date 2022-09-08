@@ -1,8 +1,6 @@
 # from collections import deque
 from queue import PriorityQueue
 
-import matplotlib.pyplot as plt
-
 from neural import *
 from path_algorithms.a_star import a_star
 # from path_algorithms.bfs import bfs
@@ -57,8 +55,8 @@ for i in range(15):
             rubbish_list.append(Rubbish(screen, j * 60, i * 60))
 
 path = []
-X,y = create_training_data()
-model = learn_neural_network(X,y)
+x, y = create_training_data()
+model = learn_neural_network(x, y)
 
 gen = [(truck.y / 60, truck.x / 60)]
 fl = 0
@@ -128,9 +126,9 @@ while True:
 
         number = np.random.randint(2077)
         path_img = "images/bbb"
-        img = Image.open(path_img+'/'+str(number)+'.jpg')
+        img = Image.open(path_img + '/' + str(number) + '.jpg')
         img.show()
-        prediction = predict(model,path_img+'/'+str(number)+'.jpg')
+        prediction = predict(model, path_img + '/' + str(number) + '.jpg')
         result(prediction)
         data = rubbish_list[order[0]].data_for_decision_tree()
         print(f'----------\n'
