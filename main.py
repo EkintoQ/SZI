@@ -1,12 +1,16 @@
 # from collections import deque
 from queue import PriorityQueue
 
+import matplotlib.pyplot as plt
+
+from neural import *
 from path_algorithms.a_star import a_star
 # from path_algorithms.bfs import bfs
 from rubbish import *
 from tree import evaluate_values, trash_selection
 from truck import Truck
 from surface import *
+from PIL import Image
 from genetic import genetic
 
 RESOLUTION = 900
@@ -53,6 +57,9 @@ for i in range(15):
             rubbish_list.append(Rubbish(screen, j * 60, i * 60))
 
 path = []
+X,y = create_training_data()
+model = learn_neural_network(X,y)
+
 gen = [(truck.y / 60, truck.x / 60)]
 fl = 0
 length = []
@@ -118,6 +125,13 @@ while True:
 
     # the decision that takes what to do with the garbage
     if not path and order:
+
+        number = np.random.randint(2077)
+        path_img = "images/bbb"
+        img = Image.open(path_img+'/'+str(number)+'.jpg')
+        img.show()
+        prediction = predict(model,path_img+'/'+str(number)+'.jpg')
+        result(prediction)
         data = rubbish_list[order[0]].data_for_decision_tree()
         print(f'----------\n'
               f'Characteristics of the garbage we met:\n'
